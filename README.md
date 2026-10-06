@@ -34,6 +34,8 @@ Grid planners need to know **when** and **in which states** electricity demand p
    - `state_yearly_trend` / `top5_vs_rest` / `states_vs_others` — supporting views for comparison visuals
 4. **Dashboard (Power BI):** Built a 3-page report directly on these views — no calculations were redone in Power BI itself.
 
+Full SQL (table setup, cleaning, views) is in [`queries.sql`](queries.sql); all Power BI DAX measures are in [`measures.txt`](measures.txt).
+
 ## Key Insights
 
 - **Maharashtra is India's highest-consuming state**, averaging 446 units/day — about 36% ahead of 2nd-ranked Uttar Pradesh (328).
