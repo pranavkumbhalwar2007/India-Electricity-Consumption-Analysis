@@ -1,0 +1,76 @@
+India Electricity Consumption Analysis — Power BI DAX Measures
+================================================================
+Note: MySQL views appear in Power BI's data model with a space in the
+table name (e.g. "electricity_project state_ranking"), so DAX references
+to them must wrap the full name in single quotes.
+
+Top State =
+SELECTEDVALUE(
+    'electricity_project state_ranking'[state],
+    CALCULATE(
+        MAX('electricity_project state_ranking'[state]),
+        'electricity_project state_ranking'[avg_consumption]
+            = MAX('electricity_project state_ranking'[avg_consumption])
+    )
+)
+
+April COVID Drop =
+SELECTEDVALUE(
+    'electricity_project covid_comparison'[pct_change],
+    CALCULATE(
+        MAX('electricity_project covid_comparison'[pct_change]),
+        'electricity_project covid_comparison'[months] = 4
+    )
+)
+
+Peak Month =
+VAR PeakMonthNum =
+    CALCULATE(
+        MAX('electricity_project monthly_seasonality'[months]),
+        'electricity_project monthly_seasonality'[avg_total]
+            = MAX('electricity_project monthly_seasonality'[avg_total])
+    )
+RETURN
+    SWITCH(
+        PeakMonthNum,
+        1, "January", 2, "February", 3, "March", 4, "April",
+        5, "May", 6, "June", 7, "July", 8, "August",
+        9, "September", 10, "October", 11, "November", 12, "December",
+        "Unknown"
+    )
+
+Overall Growth =
+VAR FirstYearAvg =
+    CALCULATE(
+        MIN('electricity_project yoy_growth'[avg_total]),
+        'electricity_project yoy_growth'[year]
+            = MIN('electricity_project yoy_growth'[year])
+    )
+VAR LastYearAvg =
+    CALCULATE(
+        MAX('electricity_project yoy_growth'[avg_total]),
+        'electricity_project yoy_growth'[year]
+            = MAX('electricity_project yoy_growth'[year])
+    )
+RETURN
+    ROUND((LastYearAvg - FirstYearAvg) / FirstYearAvg * 100, 1)
+
+Top Gap =
+VAR MaharashtraAvg =
+    CALCULATE(
+        MAX('electricity_project state_ranking'[avg_consumption]),
+        'electricity_project state_ranking'[state] = "Maharashtra"
+    )
+VAR UPAvg =
+    CALCULATE(
+        MAX('electricity_project state_ranking'[avg_consumption]),
+        'electricity_project state_ranking'[state] = "UP"
+    )
+RETURN
+    MaharashtraAvg - UPAvg
+
+Total Days = 3707
+
+Total States = 34
+
+Date Range = "2013 - 2024"
